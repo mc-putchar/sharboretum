@@ -38,4 +38,4 @@ The core mechanic centers on the **Sharbor NFT** (Non-Fungible Token), an asset 
 
 ## 🚀 Live Demo
 
-**Open the App in Telegram:**`https://t.me/sharborkeeper_bot`
+[**Open the App in Telegram**](https://t.me/sharborkeeper_bot)
