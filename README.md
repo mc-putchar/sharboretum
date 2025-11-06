@@ -1,26 +1,41 @@
-# Sharboretum
+<p align="center">
+<img src="./public/images/icons/sharboretum-logo.png" alt="Sharboretum App Logo" width="200"/>
+</p>
 
-## Project structure
+# 🌳 Sharboretum: The Care-to-Own Mini App on TON
 
--   `contracts` - source code of all the smart contracts of the project and their dependencies.
--   `wrappers` - wrapper classes (implementing `Contract` from ton-core) for the contracts, including any [de]serialization primitives and compilation functions.
--   `tests` - tests for the contracts.
--   `scripts` - scripts used by the project, mainly the deployment scripts.
+**Developed for** TON X 42 Berlin Hackathon
 
-## How to use
+**Sharboretum** is a GameFi project built as a **Telegram Mini App (TMA)** that transforms passive user effort into verifiable, unique digital assets on The Open Network (**TON**). Blending a serene, low-poly 3D aesthetic with cutting-edge blockchain technology to create a meaningful **"Care-to-Own"** experience.
 
-### Build
+## ✨ Core Innovation: Proof-of-Availability (PoA)
 
-`npx blueprint build` or `yarn blueprint build`
+Solving the high-cost barrier of mass-user blockchain gaming. Instead of expensive on-chain actions, we leverage cryptography:
 
-### Test
+* **Heartbeat** $\rightarrow$ **Merkle Tree:** Every daily care action (watering/nourishing your Sharbor) is recorded as a **Heartbeat** and bundled off-chain into a single **Merkle Tree**.
 
-`npx blueprint test` or `yarn blueprint test`
+* **On-Chain Proof:** Only the final **Merkle Root Hash** is committed to TON, providing **trustless, low-cost proof** of millions of users' availability and effort.
 
-### Deploy or run another script
+* **Verifiable Rewards:** Users use a **Merkle Proof** to claim rewards or, crucially, to **Shard** (mint new offspring NFTs).
 
-`npx blueprint run` or `yarn blueprint run`
+## 🎮 Gameplay & Value Loop
 
-### Add a new contract
+The core mechanic centers on the **Sharbor NFT** (Non-Fungible Token), an asset with intrinsic value:
 
-`npx blueprint create ContractName` or `yarn blueprint create ContractName`
+1. **Nurturing:** Players care for a **Shardling NFT** (seed) through daily **Heartbeats**.
+
+2. **Lineage:** A mature Sharbor can **Shard**, minting a descendant Shardling. The Sharbor's **Lineage Length** and **Mutation Score** (influenced by social actions) are permanently recorded in the NFT metadata, driving its rarity and value.
+
+3. **Social Virality:** Players are incentivized to **Water a Friend's Sharbor** and **Share their progress** on Telegram, boosting their Mutation Score and driving viral growth.
+
+## 🛠️ Technology Stack (36-Hour Build)
+
+| **Component** | **Technology** | **Role** | 
+| **Frontend/UI** | **React / Framer Motion** | Stunning, fluid, mobile-first UI with subtle animations and layered controls. | 
+| **3D Rendering** | **React-Three-Fiber (R3F) / Three.js** | High-performance, interactive, low-poly 3D rendering of the Sharbor model. | 
+| **Backend/Logic** | **Node.js / Express / SQLite** | Off-chain management of user data, Merkle Tree construction, and Heartbeat tracking. | 
+| **Blockchain** | **TON (The Open Network) / Tolk 1.1.0** | Smart Contracts for NFT (Sharbor) minting, Jetton ($SHARD$) currency, and Merkle Root verification. | 
+
+## 🚀 Live Demo
+
+**Open the App in Telegram:**`https://t.me/sharborkeeper_bot`
