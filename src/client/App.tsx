@@ -24,6 +24,8 @@ import { useBackgroundMusic } from './utils/useBackgroundMusic';
 import { MusicControl } from './components/MusicControl';
 
 import { IntegrationTests } from './components/IntegrationTests';
+import { TonConnectUIProvider } from '@tonconnect/ui-react';
+import { WalletConnectionPanel } from './components/WalletConnectionPanel';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -418,8 +420,8 @@ export const App: React.FC = () => {
         ton_address: 'EQCk...abcd',
         shard_balance: 42,
         mutation_score: 57,
-        health: 46,
-        growth_percent: 2,
+        health: 76,
+        growth_percent: 72,
         nft_id: '12345',
         generation: 2,
         parent_nft_address: 'EQBparentParentParentParentParentParentParent1234',
@@ -542,137 +544,174 @@ export const App: React.FC = () => {
     // Derived lineage length (placeholder: use generation for display)
     const lineageLength = sharbor.generation ?? undefined;
 
+    // Triggered by WalletConnectionPanel upon successful TON wallet connection.
+    // Calls the backend heartbeat endpoint to onboard or refresh the user session.
+    async function handleWalletConnect(tonAddress: string) {
+        try {
+            await fetch('/api/heartbeat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ton_address: tonAddress,
+                    timestamp: Math.floor(Date.now() / 1000),
+                }),
+            });
+            setToasts((prev) => [
+                ...prev,
+                {
+                    id: crypto.randomUUID(),
+                    type: 'success',
+                    title: 'Wallet Connected',
+                    message: 'Heartbeat sent.',
+                },
+            ]);
+        } catch (err) {
+            setToasts((prev) => [
+                ...prev,
+                {
+                    id: crypto.randomUUID(),
+                    type: 'error',
+                    title: 'Heartbeat Failed',
+                    message: 'Unable to reach server. Please try again.',
+                },
+            ]);
+        }
+    }
+
     return (
-        <div className="min-h-screen w-full overflow-hidden bg-gradient-to-b from-teal-900 via-slate-900 to-violet-900">
-            {/* Animated Background */}
-            <Background />
+        <TonConnectUIProvider manifestUrl={`${window.location.origin}/tonconnect-manifest.json?v=2`}>
+            <div className="min-h-screen w-full overflow-hidden bg-gradient-to-b from-teal-900 via-slate-900 to-violet-900">
+                {/* Animated Background */}
+                <Background />
 
-            {/* Subtle noise overlay for low-poly mood */}
-            <div className="pointer-events-none fixed inset-0 z-[1] opacity-[0.04] bg-[radial-gradient(circle_at_20%_20%,#000_1px,transparent_1px)] [background-size:10px_10px]" />
+                {/* Subtle noise overlay for low-poly mood */}
+                <div className="pointer-events-none fixed inset-0 z-[1] opacity-[0.04] bg-[radial-gradient(circle_at_20%_20%,#000_1px,transparent_1px)] [background-size:10px_10px]" />
 
-            {/* Toast notifications */}
-            <ToastHost
-                toasts={toasts}
-                onDismiss={(id: string) => setToasts((prev: ToastMessage[]) => prev.filter((t) => t.id !== id))}
-            />
+                {/* Toast notifications */}
+                <ToastHost
+                    toasts={toasts}
+                    onDismiss={(id: string) => setToasts((prev: ToastMessage[]) => prev.filter((t) => t.id !== id))}
+                />
 
-            <div className="relative z-0 w-full" style={{ height: '80%', paddingBottom: '80px' }}>
-                {/* Mutation celebration particles from top area */}
-                <AnimatePresence>
-                    {celebrateMutation && (
-                        <SparkleBurst key={`celebrate-${sparkleKey}`} from="lineage" count={12} duration={1.2} />
-                    )}
-                </AnimatePresence>
+                <div className="relative z-0 w-full" style={{ height: '80%', paddingBottom: '80px' }}>
+                    {/* Mutation celebration particles from top area */}
+                    <AnimatePresence>
+                        {celebrateMutation && (
+                            <SparkleBurst key={`celebrate-${sparkleKey}`} from="lineage" count={12} duration={1.2} />
+                        )}
+                    </AnimatePresence>
 
-                {/* Card-based Layout */}
-                <div className="relative w-full p-4 lg:p-6" style={{ minHeight: '100vh' }}>
-                    <div className="mx-auto max-w-7xl">
-                        {/* Top Cards Row */}
-                        <motion.div
-                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <ControlCard isMuted={isMuted} onToggleMute={toggleMute} />
-                            <StatusCard
-                                shardBalance={sharbor.shard_balance ?? 0}
-                                generation={sharbor.generation}
-                                lineageLength={lineageLength}
-                            />
-                        </motion.div>
-
-                        {/* Progress Cards Overlay */}
-                        <div className="inset-0 z-10 pointer-events-none p-4">
-                            <div className="grid grid-cols-2 gap-4 h-full">
-                                <ProgressRings health={health01} growth={growth01} />
-                            </div>
-                        </div>
-
-                        {/* Main Content Area with Cards Overlay */}
-                        <div className="relative overflow-hidden" style={{ height: '60vh' }}>
-                            {/* Central 3D Canvas */}
-                            <div
-                                className="z-1 overflow-hidden"
-                                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+                    {/* Card-based Layout */}
+                    <div className="relative w-full p-4 lg:p-6" style={{ minHeight: '100vh' }}>
+                        <div className="mx-auto max-w-7xl">
+                            {/* Top Cards Row */}
+                            <motion.div
+                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5 }}
                             >
-                                <Sharboretum3D sharborStatus={sharborState} />
-                            </div>
-
-                            {/* Mutation celebration particles */}
-                            <AnimatePresence>
-                                {celebrateMutation && (
-                                    <SparkleBurst
-                                        key={`celebrate-${sparkleKey}`}
-                                        from="lineage"
-                                        count={12}
-                                        duration={1.2}
-                                    />
-                                )}
-                            </AnimatePresence>
-
-                            <div className="z-0" style={{ position: 'absolute', bottom: 0 }}>
-                                <ActionBar
-                                    onWaterClick={handleWater}
-                                    onClaimClick={handleClaim}
-                                    onShardClick={handleShare}
-                                    onHurtClick={handleHurtDEMO}
-                                    onUngrowClick={handleUngrowDEMO}
-                                    waterUrgent={health01 < 0.5}
+                                <WalletConnectionPanel onWalletConnect={handleWalletConnect} />
+                                <ControlCard isMuted={isMuted} onToggleMute={toggleMute} />
+                                <StatusCard
+                                    shardBalance={sharbor.shard_balance ?? 0}
+                                    generation={sharbor.generation}
+                                    lineageLength={lineageLength}
                                 />
+                            </motion.div>
+
+                            {/* Progress Cards Overlay */}
+                            <div className="inset-0 z-10 pointer-events-none p-4">
+                                <div className="grid grid-cols-2 gap-4 h-full">
+                                    <ProgressRings health={health01} growth={growth01} />
+                                </div>
                             </div>
 
-                            {/*<div className="inset-0 z-15 pointer-events-none rounded-3xl border-2 border-white/10" />*/}
-
-                            {/* Social Panel with smooth animations */}
-                            <div className="relative inset-0 z-40">
-                                <SocialPanel open={socialOpen} onClose={() => setSocialOpen(false)} />
-                            </div>
-                        </div>
-
-                        <div className="sticky bottom-0 z-20 pointer-events-auto">
-                            {/* Social Panel Button */}
-                            <SocialPanelButton onClick={() => setSocialOpen((s) => !s)} />
-                            {/* Open Integration Tests */}
-                            <button
-                                type="button"
-                                className="fixed z-30"
-                                style={{
-                                    backgroundColor: 'rgba(142, 142, 142, 0.8)',
-                                    borderColor: 'rgba(255, 255, 255, 0.7)',
-                                    backdropFilter: 'blur(12px) saturate(150%)',
-                                    borderRadius: '20%',
-                                    right: 16,
-                                }}
-                                onClick={() => setShowTests(true)}
-                                title="Open Integration Tests"
-                            >
-                                Tests
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {showTests && (
-                    <div className="fixed inset-0 z-100 overflow-auto bg-black/60 backdrop-blur-sm">
-                        <div className="max-w-7xl mx-auto p-4">
-                            <div className="flex items-center justify-between mb-3">
-                                <h1 className="text-white font-semibold">Sharboretum Integration Tests</h1>
-                                <button
-                                    className="px-3 py-1 rounded bg-slate-700 hover:bg-slate-600 text-white"
-                                    onClick={() => setShowTests(false)}
+                            {/* Main Content Area with Cards Overlay */}
+                            <div className="relative overflow-hidden" style={{ height: '60vh' }}>
+                                {/* Central 3D Canvas */}
+                                <div
+                                    className="z-1 overflow-hidden"
+                                    style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
                                 >
-                                    Back to App
+                                    <Sharboretum3D sharborStatus={sharborState} />
+                                </div>
+
+                                {/* Mutation celebration particles */}
+                                <AnimatePresence>
+                                    {celebrateMutation && (
+                                        <SparkleBurst
+                                            key={`celebrate-${sparkleKey}`}
+                                            from="lineage"
+                                            count={12}
+                                            duration={1.2}
+                                        />
+                                    )}
+                                </AnimatePresence>
+
+                                <div className="z-0" style={{ position: 'absolute', bottom: 0 }}>
+                                    <ActionBar
+                                        onWaterClick={handleWater}
+                                        onClaimClick={handleClaim}
+                                        onShardClick={handleShare}
+                                        onHurtClick={handleHurtDEMO}
+                                        onUngrowClick={handleUngrowDEMO}
+                                        waterUrgent={health01 < 0.5}
+                                    />
+                                </div>
+
+                                {/*<div className="inset-0 z-15 pointer-events-none rounded-3xl border-2 border-white/10" />*/}
+
+                                {/* Social Panel with smooth animations */}
+                                <div className="relative inset-0 z-40">
+                                    <SocialPanel open={socialOpen} onClose={() => setSocialOpen(false)} />
+                                </div>
+                            </div>
+
+                            <div className="sticky bottom-0 z-20 pointer-events-auto">
+                                {/* Social Panel Button */}
+                                <SocialPanelButton onClick={() => setSocialOpen((s) => !s)} />
+                                {/* Open Integration Tests */}
+                                <button
+                                    type="button"
+                                    className="fixed z-30"
+                                    style={{
+                                        backgroundColor: 'rgba(142, 142, 142, 0.8)',
+                                        borderColor: 'rgba(255, 255, 255, 0.7)',
+                                        backdropFilter: 'blur(12px) saturate(150%)',
+                                        borderRadius: '20%',
+                                        right: 16,
+                                    }}
+                                    onClick={() => setShowTests(true)}
+                                    title="Open Integration Tests"
+                                >
+                                    Tests
                                 </button>
                             </div>
-                            <div className="rounded-lg border border-slate-700 bg-slate-900/70">
-                                <IntegrationTests />
-                            </div>
                         </div>
                     </div>
-                )}
+
+                    {showTests && (
+                        <div className="fixed inset-0 z-100 overflow-auto bg-black/60 backdrop-blur-sm">
+                            <div className="max-w-7xl mx-auto p-4">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h1 className="text-white font-semibold">Sharboretum Integration Tests</h1>
+                                    <button
+                                        className="px-3 py-1 rounded bg-slate-700 hover:bg-slate-600 text-white"
+                                        onClick={() => setShowTests(false)}
+                                    >
+                                        Back to App
+                                    </button>
+                                </div>
+                                <div className="rounded-lg border border-slate-700 bg-slate-900/70">
+                                    <IntegrationTests />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </TonConnectUIProvider>
     );
 };
 export default App;

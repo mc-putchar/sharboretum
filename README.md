@@ -28,13 +28,13 @@ The core mechanic centers on the **Sharbor NFT** (Non-Fungible Token), an asset 
 
 3. **Social Virality:** Players are incentivized to **Water a Friend's Sharbor** and **Share their progress** on Telegram, boosting their Mutation Score and driving viral growth.
 
-## 🛠️ Technology Stack (36-Hour Build)
+## 🛠️ Technology Stack (30-Hour Build)
 
-| **Component** | **Technology** | **Role** | 
-| **Frontend/UI** | **React / Framer Motion** | Stunning, fluid, mobile-first UI with subtle animations and layered controls. | 
-| **3D Rendering** | **React-Three-Fiber (R3F) / Three.js** | High-performance, interactive, low-poly 3D rendering of the Sharbor model. | 
-| **Backend/Logic** | **Node.js / Express / SQLite** | Off-chain management of user data, Merkle Tree construction, and Heartbeat tracking. | 
-| **Blockchain** | **TON (The Open Network) / Tolk 1.1.0** | Smart Contracts for NFT (Sharbor) minting, Jetton ($SHARD$) currency, and Merkle Root verification. | 
+| **Component** | **Technology** | **Role** |
+| **Frontend/UI** | **React / Framer Motion** | Stunning, fluid, mobile-first UI with subtle animations and layered controls. |
+| **3D Rendering** | **React-Three-Fiber (R3F) / Three.js** | High-performance, interactive, low-poly 3D rendering of the Sharbor model. |
+| **Backend/Logic** | **Node.js / Express / SQLite** | Off-chain management of user data, Merkle Tree construction, and Heartbeat tracking. |
+| **Blockchain** | **TON (The Open Network) / Tolk 1.1.0** | Smart Contracts for NFT (Sharbor) minting, Jetton ($SHARD$) currency, and Merkle Root verification. |
 
 ## 🚀 Live Demo
 
